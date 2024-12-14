@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buffon's Needle Simulation</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #board {
+            position: relative;
+            width: 600px;
+            height: 200px;
+            border: 1px solid black;
+            background: white;
+        }
+
+        .crack {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: gray;
+        }
+
+        .needle {
+            position: absolute;
+            width: 2px;
+            background-color: red;
+        }
+
+        #controls {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        #result {
+            margin-top: 10px;
+            font-size: 18px;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Buffon's Needle Simulation</h1>
+    <div id="board">
+        <div class="crack" style="top: 0;"></div>
+        <div class="crack" style="top: 100px;"></div>
+        <div class="crack" style="bottom: 0;"></div>
+    </div>
+    <div id="controls">
+        <button onclick="dropNeedles(10)">Drop 10 Needles</button>
+        <button onclick="dropNeedles(100)">Drop 100 Needles</button>
+        <button onclick="dropNeedles(500)">Drop 500 Needles</button>
+        <button onclick="dropNeedles(1000)">Drop 1000 Needles</button>
+        <button onclick="resetSimulation()">Reset</button>
+    </div>
+    <div id="result">Estimate for &pi;: N/A</div>
+
+    <script>
+        const board = document.getElementById("board");
+        const result = document.getElementById("result");
+        const boardHeight = 200; // px
+        const boardWidth = 600; // px
+        const crackDistance = 100; // px (distance between cracks)
+        let needleLength = 100; // px (fixed length of the needle, same as crack distance)
+        let totalNeedles = 0;
+        let needlesCrossed = 0;
+
+        function dropNeedles(count) {
+            for (let i = 0; i < count; i++) {
+                const x = Math.random() * boardWidth;
+                const y = Math.random() * boardHeight;
+                const angle = Math.random() * 2 * Math.PI;
+
+                const x1 = x - (needleLength / 2) * Math.cos(angle);
+                const x2 = x + (needleLength / 2) * Math.cos(angle);
+
+                // Check if needle crosses a crack
+                if (Math.floor(y / crackDistance) !== Math.floor((y + (needleLength / 2) * Math.sin(angle)) / crackDistance) ||
+                    Math.floor(y / crackDistance) !== Math.floor((y - (needleLength / 2) * Math.sin(angle)) / crackDistance)) {
+                    needlesCrossed++;
+                }
+
+                drawNeedle(x, y, angle);
+                totalNeedles++;
+            }
+
+            updatePiEstimate();
+        }
+
+        function drawNeedle(x, y, angle) {
+            const needle = document.createElement("div");
+            needle.className = "needle";
+            needle.style.height = `${needleLength}px`;
+            needle.style.transformOrigin = "center center";
+            needle.style.transform = `rotate(${angle}rad)`;
+            needle.style.top = `${y - needleLength / 2}px`;
+            needle.style.left = `${x}px`;
+            board.appendChild(needle);
+        }
+
+        function updatePiEstimate() {
+            if (needlesCrossed > 0) {
+                const piEstimate = (2 * needleLength * totalNeedles) / (crackDistance * needlesCrossed);
+                result.innerHTML = `Estimate for &pi;: ${piEstimate.toFixed(5)}`;
+            } else {
+                result.innerHTML = "Estimate for &pi;: N/A";
+            }
+        }
+
+        function resetSimulation() {
+            totalNeedles = 0;
+            needlesCrossed = 0;
+            board.innerHTML = "<div class=\"crack\" style=\"top: 0;\"></div><div class=\"crack\" style=\"top: 100px;\"></div><div class=\"crack\" style=\"bottom: 0;\"></div>";
+            result.innerHTML = "Estimate for &pi;: N/A";
+        }
+    </script>
+</body>
+</html>
