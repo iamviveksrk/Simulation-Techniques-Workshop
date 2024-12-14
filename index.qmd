@@ -1,0 +1,231 @@
+---
+title: Simulation Techniques & Estimation in ML
+author: Vivek Sivaramakrishnan
+format: 
+    revealjs:
+        navigation-mode: vertical
+        controls: true
+        theme: [simple, files\stylesheet.scss]
+        incremental: true
+        mermaid:
+            theme: dark
+        slide-number: h.v
+---
+. . .
+
+> Note: This is the preview-draft for the final presentation. Changes (mostly in the form of content additions, visualizations, style refinements) will apply.
+
+. . .
+
+# $\pi$
+
+- For any circle, $\pi$ is the ratio between the circumference and the diameter
+- $\pi$ is a *transcendental* number
+- We'll look at how to estimate $\pi$ using simulations
+
+## Set-up
+
+- Consider a unit-radius circle and a square (with `side-length=2`) centered at the origin
+- Theoretically we know that the ratio of the area of the circle to the square is equal to $\pi/4$
+- How to approximate this?
+
+## Numerical Approximation 🧮
+
+- Add a $n\times n$ mesh-grid of points within the square
+- Count the number of points that fall inside the circle; say $p_{\text{circle}}$
+- Observe that $p_{\text{square}} = n^2$
+- Then we have:
+
+. . .
+
+$$
+\frac{\pi}{4} = \frac{p_{\text{circle}}}{p_{\text{square}}}
+$$
+
+- What are potential drawbacks of this algorithm?
+
+## Approximation by Simulation 🤖
+
+- Sample some $n$ observations $(U_1, U_2)$ where $U_1, U_2 \overbrace{\sim}^{\text{i.i.d}} \mathcal{U}[-1, 1]$
+- As in the previous slide perform the same computations to get $p_{\text{circle}}, p_{\text{square}}$ and finally $\pi/4$
+- Hold on! How do you sample from $\mathcal{U}[-1, 1]$??
+- Before that, how do you even generate random numbers?
+
+## Randomness 😕
+
+The answer is; you can't. However, you can be *pretentious*;
+
+## Pseudo-randomness 😎
+
+The answer is; you can't. However, you can be *pretentious*; and fake it (well enough)!
+
+- A possible strategy to do this is the *Mixed Congruential Generator*:
+
+. . .
+
+$$
+X_{n+1} =  (aX_n + c) \mod{m}
+$$
+
+- where,
+    - $X$ is the sequence of pseudo-random values, and
+    - $m,\,0<m$— the "modulus"
+    - $a,\,0<a<m$— the "multiplier"
+    - $c,\,0\le c<m$— the "increment"
+    - $X_{0},\,0\leq X_{0}<m$— the "seed" or "start value"
+
+- are integer constants that specify the generator.
+
+## MCG Coding Excercise
+
+- Initially with some small constants
+- Discussion on how to select constants to perfectly emulate randomness
+
+## Ok, now what?
+
+- How to generate samples from $\mathcal{U}[0, 1]$?
+- The above forms the backbone for any *random-sampling* method in general, as we'll soon see
+- Just modify our `MCG` to instead return $\frac{X_{n+1}}{m}$! 
+- We'll use this generator for the rest of this workshop. 
+
+## Back to $\pi$ simulation
+
+- How to sample from $\mathcal{U}[-1, 1]$?
+- Observe we can use the previous method to get $u_i$, which are realizations of $\mathcal{U}[0, 1]$
+- Then it follows that $2 \times u_i -1$ are realizations of $\mathcal{U}[-1, 1]$! (Verify this by coding and plotting)
+- Now we have all the tools to approximate $\pi$ (Code)
+
+## Another approach - Buffon's Needle
+
+<iframe width="1000" height="800" src='files\buffon.html'></iframe>
+
+## Another approach - Buffon's Needle
+
+Buffon's needle experiment is not a very efficient method of approximating $\pi$;
+
+- To estimate $\pi$ to 4 d.p. we would require about 100 million tosses!
+
+# Approximating $e$
+
+<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:6774714448797081600" height="271" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
+
+# Archery Challenge 🏹
+
+- Robin from Foxley is an expert in Archery
+- Her aim is excellent (relatively speaking), as she is guaranteed to hit the circular target, which has no subdivisions — it’s just one big circle.
+- However, her arrows are equally likely to hit each location within the target.
+- Her true love, Marian, has issued a challenge: 
+
+---
+
+Robin must fire as many arrows as she can, such that each arrow is closer to the center of the target than the previous arrow. 
+
+. . .
+
+For example, if Robin fires three arrows, each closer to the center than the previous, but the fourth arrow is farther than the third, then she is done with the challenge and her score is four.
+
+. . .
+
+On average, what score can Robin expect to achieve in this archery challenge?
+
+::: footer
+Problem from: [https://fivethirtyeight.com/features/can-you-hunt-for-the-mysterious-numbers/](https://fivethirtyeight.com/features/can-you-hunt-for-the-mysterious-numbers/)
+:::
+
+## Making it simpler
+
+- Equivalent problem: Keep sampling $r_i$ from $\mathcal{U}[0, 1]$ and stop when $r_{i+1} < r_i$
+- Why?
+- A little hard; Easy to solve by *simulation*
+- It's $e$, again! 🎯
+
+# Cryptic statistical result
+
+![🤯🤯](files\local_maxima.png)
+
+- The average distance between local maximas in a sequence of draws from *any* continuous distribution is $3$!
+
+::: footer
+Paper link: [https://arxiv.org/abs/math/0611130](https://arxiv.org/abs/math/0611130)
+:::
+
+## Extending from 🏹
+
+- Observe that in the previous problem, we stopped after arriving at the first *peak*
+- For this problem, we can continue sampling until we reach the second peak,
+- and return the distance between the first and second peaks.
+- We can try the same for different continuous distributions too;
+- but the answer is always exactly $3$! (no, not `3 factorial` 🙄)
+
+# The (popular) Monty Hall Problem
+
+<iframe width="1000" height="455" src='files\monty_hall.html'></iframe>
+
+## Strategy or Random?
+
+- Should you swap? Should you stay? Or is it just random?
+- Let's simulate!
+- Wait, hold on. How do you randomly pick one off the three doors?
+- How to simulate a coin toss?
+
+## Inverse transform
+
+- The idea is to obtain the cdf of the distribution we'd like to sample (For our case the coin toss distribution is $\operatorname{Bernoulli}(1/2)$)
+- Recall that the cdf maps $\operatorname{support of } X \rightarrow [0, 1]$
+- Also recall we know how to sample values (pseudo-randomly) between 0 and 1
+- So we just invert the cdf, with our sample as input!
+
+## Implementing the inverse transform for our coin toss
+
+- We have the following probability distribution table for the coin toss (setting `Heads` = 0, `Tails` = 1 (induce any arbitray ordering)):
+
+. . .
+
+&nbsp;|$X = 0$|$X = 1$
+--|--|--
+Proabilities | $0.5$ | $0.5$
+
+- The corresponding cumulative distribution table:
+
+. . .
+
+&nbsp;|$X \le 0$|$X \le 1$
+--|--|--
+Proabilities | $0.5$ | $0.5 + 0.5 = 1$
+
+## $🪙$ toss
+
+- Let's simulate a coin toss!
+- Now we're ready to sample doors randomly. We have the following cmf table:
+
+. . .
+
+&nbsp;|$X \le 0$|$X \le 1$ | $X \le 2$
+--|--|--|--
+Proabilities | $1/3$ | $2/3$ | $1$
+
+# Bobo's Lineage
+
+![A problem from Blitzstein and Hwang's probability textbook](files\bobo_problem.png)
+
+## Contents pending to be added:
+
+- Snake and Ladders (with a twist)
+- Maximum likelihood estimation.
+- Example MLE problem involving estimating parameters of a poisson distribution.
+- Using discrete inverse transform to sample from Poisson.
+- Example MLE problem wrt exponential distribution.
+- Sample exponential using contiunuous inverse transform.
+- Example MLE problem involving Gaussian distribution.
+- Box-Muller transform to sample from Normal.
+
+---
+
+- Example MLE on mixture of Gaussians (no closed form)
+- Composition method to sample from mixture of Gaussians
+- Discussion on concavity, and the MLE not being concave
+- Intro to the Majorization-Minimization framework.
+- Discussion of the EM algorithm, and latent variables
+- EM algorithm for GMMs, and obtaining MLE estimates
+- Example MLE on *censored* data
+- Explanation of EM in this context
