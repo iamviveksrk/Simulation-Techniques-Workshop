@@ -454,8 +454,10 @@ X_{n+1} =  (aX_n + c) \mod{m}
 </section></section>
 <section id="approximating-e" class="title-slide slide level1 center">
 <h1>Approximating <span class="math inline">\(e\)</span></h1>
+<div class="fragment">
 <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:6774714448797081600" height="271" width="504" frameborder="0" allowfullscreen="" title="Embedded post">
 </iframe>
+</div>
 </section>
 
 <section>
@@ -529,7 +531,7 @@ X_{n+1} =  (aX_n + c) \mod{m}
 <section id="inverse-transform" class="slide level2">
 <h2>Inverse transform</h2>
 <ul>
-<li class="fragment">The idea is to obtain the cdf of the distribution we’d like to sample (For our case the coin toss distribution is <span class="math inline">\(\operatorname{Bernoulli}(1/2)\)</span>)</li>
+<li class="fragment">The idea is to obtain the cdf of the distribution we’d like to sample (For our case the coin toss distribution is <span class="math inline">\(\operatorname{Bernoulli}(1/2)\)</span> )</li>
 <li class="fragment">Recall that the cdf maps <span class="math inline">\(\operatorname{support of } X \rightarrow [0, 1]\)</span></li>
 <li class="fragment">Also recall we know how to sample values (pseudo-randomly) between 0 and 1</li>
 <li class="fragment">So we just invert the cdf, with our sample as input!</li>
@@ -538,7 +540,7 @@ X_{n+1} =  (aX_n + c) \mod{m}
 <section id="implementing-the-inverse-transform-for-our-coin-toss" class="slide level2">
 <h2>Implementing the inverse transform for our coin toss</h2>
 <ul>
-<li class="fragment">We have the following probability distribution table for the coin toss (setting <code>Heads</code> = 0, <code>Tails</code> = 1 (induce any arbitray ordering)):</li>
+<li class="fragment">We have the following probability distribution table for the coin toss (setting <code>Heads</code> = 0, <code>Tails</code> = 1 (induce any arbitrary ordering)):</li>
 </ul>
 <div class="fragment">
 <table class="caption-top">
@@ -607,35 +609,425 @@ X_{n+1} =  (aX_n + c) \mod{m}
 </table>
 </div>
 </section></section>
-<section>
 <section id="bobos-lineage" class="title-slide slide level1 center">
 <h1>Bobo’s Lineage</h1>
 
 <img data-src="files\bobo_problem.png" class="r-stretch quarto-figure-center"><p class="caption">A problem from Blitzstein and Hwang’s probability textbook</p></section>
-<section id="contents-pending-to-be-added" class="slide level2">
-<h2>Contents pending to be added:</h2>
+
+<section>
+<section id="session-2---estimation" class="title-slide slide level1 center">
+<h1>Session 2 - Estimation</h1>
+
+</section>
+<section id="naughty-whiskers" class="slide level2">
+<h2>Naughty Whiskers 😼</h2>
 <ul>
-<li class="fragment">Snake and Ladders (with a twist)</li>
-<li class="fragment">Maximum likelihood estimation.</li>
-<li class="fragment">Example MLE problem involving estimating parameters of a poisson distribution.</li>
-<li class="fragment">Using discrete inverse transform to sample from Poisson.</li>
-<li class="fragment">Example MLE problem wrt exponential distribution.</li>
-<li class="fragment">Sample exponential using contiunuous inverse transform.</li>
-<li class="fragment">Example MLE problem involving Gaussian distribution.</li>
-<li class="fragment">Box-Muller transform to sample from Normal.</li>
+<li class="fragment">Cats love knowcking things off the table/counter (natural <a href="https://www.petmd.com/cat/behavior/why-do-cats-knock-things-over#:~:text=It's%20Instinct,desks%20plays%20to%20this%20instinct.">instinct</a>)</li>
+<li class="fragment">As a cat research scientist, you’re interested in how often cats perform this action.</li>
+<li class="fragment">You collect the following data:</li>
 </ul>
+<div class="fragment">
+<p><span class="math display">\[\begin{equation*}
+\text{Data}:&nbsp;[1,1,0,1,0,1,1,1,0,0,1,1,0,1,1,1,0,1,1,0]
+\end{equation*}\]</span></p>
+</div>
+</section>
+<section id="modelling" class="slide level2">
+<h2>Modelling</h2>
+<ul>
+<li class="fragment">Can be modelled as a <span class="math inline">\(😼\ \sim \operatorname{Bernoulli}(p)\)</span> random variable; i.e for some <span class="math inline">\(i^{th}\)</span> draw <span class="math inline">\(😼_i\)</span>;
+<ul>
+<li class="fragment"><span class="math inline">\(😼_i = 0\)</span> with probability <span class="math inline">\(1-p\)</span></li>
+<li class="fragment"><span class="math inline">\(😼_i = 1\)</span> with probability <span class="math inline">\(p\)</span></li>
+</ul></li>
+<li class="fragment">Now given <span class="math inline">\(\text{Data}:&nbsp;[1,1,0,1,0,1,1,1,0,0,1,1,0,1,1,1,0,1,1,0]\)</span>, how to estimate <span class="math inline">\(p\)</span>?</li>
+<li class="fragment">Average? Why?</li>
+</ul>
+</section>
+<section id="maximum-likelihood-estimation" class="slide level2">
+<h2>Maximum Likelihood Estimation</h2>
+<ul>
+<li class="fragment">Has roughly the following steps:
+<ul>
+<li class="fragment">Set-up a Model on the observed data</li>
+<li class="fragment">Obtain the likelihood function (function of the model’s parameter(s))</li>
+<li class="fragment">Find parameter value(s) that maximizes the likelihood function.</li>
+</ul></li>
+<li class="fragment">For our case we have our model to be <span class="math inline">\(😼\ \sim \operatorname{Bernoulli}(p)\)</span>.</li>
+</ul>
+</section>
+<section id="the-likelihood-function" class="slide level2">
+<h2>The Likelihood function</h2>
+<ul>
+<li class="fragment">Essesntially the probability of observing our data sample, under the model we have assumed.</li>
+<li class="fragment">The sample <span class="math inline">\(\text{Data}:&nbsp;[1,1,0,1,0,1,1,1,0,0,1,1,0,1,1,1,0,1,1,0]\)</span>,</li>
+<li class="fragment">Is observed/<em>generated</em> with a probability of:</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[\begin{align*}
+\text{likelihood}(p) &amp;= \prod_{i=1}^{n} \operatorname{Pr}(😼 = 😼_i) \\
+&amp;= p \times p \times (1-p) \times p \times \dots \times (1-p) \\
+&amp;= p^{13} \times (1-p)^{20-13}
+\end{align*}\]</span></p>
+</div>
+</section>
+<section id="maximizng-the-likelihood" class="slide level2 smaller">
+<h2>Maximizng the Likelihood 🎯</h2>
+<div class="columns">
+<div class="column fragment" data-fragment-index="1" style="width:40%;">
+<p>Straightforward;</p>
+<p>Differentiate <span class="math inline">\(p^{13} \times (1-p)^{20-13}\)</span> w.r.t <span class="math inline">\(p\)</span>,</p>
+<div class="fragment" data-fragment-index="2">
+<p>and set to <span class="math inline">\(0\)</span> and obtain maximas.</p>
+</div>
+<div class="fragment" data-fragment-index="3">
+<p>A different way to approach? Consider the log-likelihood</p>
+</div>
+<div class="fragment" data-fragment-index="4">
+<p>Both the likelihood and log-likelihood have stationary points at the same input <span class="math inline">\(x\)</span></p>
+</div>
+</div><div class="column" style="width:60%;">
+<div class="fragment" data-fragment-index="4">
+<iframe src="https://www.desmos.com/calculator/cfawyfkxl1?embed" width="500" height="500" style="border: 1px solid #ccc" frameborder="0">
+</iframe>
+</div>
+</div></div>
+</section>
+<section id="log-likelihood" class="slide level2">
+<h2>🪵Log-Likelihood🎯</h2>
+<ul>
+<li class="fragment">Taking <span class="math inline">\(\log\)</span>, we get:</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{align*}
+l(p) &amp;= \log(\text{likelihood}(p)) \\
+&amp;= \log \prod_{i=1}^{n} \operatorname{Pr}(😼 = 😼_i) \\
+&amp;= \log \left[ p^{13} \times (1-p)^{20-13}\right] \\
+&amp;= 13 \log(p) + (20-13) \log (1-p)
+\end{align*}
+\]</span></p>
+<ul>
+<li class="fragment">On differentiating, we get:</li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{align*}
+l'(p) &amp;=  \frac{13}{p} - \frac{20-13}{1-p}
+\end{align*}
+\]</span></p>
+</div>
 </section>
 <section class="slide level2">
 
 <ul>
-<li class="fragment">Example MLE on mixture of Gaussians (no closed form)</li>
-<li class="fragment">Composition method to sample from mixture of Gaussians</li>
+<li class="fragment">Suppose <span class="math inline">\(p^*\)</span> is our maxiumum-likelihood estimate. Then <span class="math inline">\(l'(p^*)\)</span> must be equal to 0. Hence:</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{align*}
+l'(p^*) &amp;=  \frac{13}{p^*} - \frac{20-13}{1-p^*} = 0 \\
+&amp;\implies \frac{13}{p^*} = \frac{20-13}{1-p^*} \\
+&amp;\implies {13}(1-p^*) = (20-13)p^* \\
+&amp;\implies p^* = \frac{13}{20} \\
+\end{align*}
+\]</span></p>
+<ul>
+<li class="fragment">Which is in accordance to our initial guess!</li>
+<li class="fragment">MLE serves as a principled approach for parameter estimation problems.</li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="spam-email-classification" class="title-slide slide level1 center">
+<h1>SPAM email classification</h1>
+<ul>
+<li class="fragment">Suppose we have a dataset of e-mails classified as <code>SPAM</code> or <code>NOT SPAM</code>/<code>HAM</code>.</li>
+<li class="fragment">Algorithm to classify an unseen email correctly.</li>
+</ul>
+</section>
+<section id="modelling-1" class="slide level2">
+<h2>Modelling</h2>
+<ul>
+<li class="fragment">Just as in the whiskers 😼 example, we’ll now cook up a <em>generative</em> model (On which we can further perform MLE);
+<ol type="1">
+<li class="fragment">First, decide if you want to generate a <code>SPAM</code> or <code>HAM</code> email using a coin-toss</li>
+<li class="fragment">Next, generate the email using <span class="math inline">\(d\)</span> coin-tosses</li>
+</ol></li>
+</ul>
+<div class="fragment">
+<p>where <span class="math inline">\(d\)</span> is the number of words in the <em>vocabulary</em>, i.e a coin-toss for each word.</p>
+</div>
+</section>
+<section id="section" class="slide level2 smaller">
+<h2></h2>
+<div class="fragment">
+<iframe width="1000" height="550" src="logmle.html">
+</iframe>
+</div>
+<ul>
+<li class="fragment">What are the number of parameters in our model?</li>
+<li class="fragment">Is this a good model?</li>
+<li class="fragment">Works surprisingly well in practice ✨</li>
+</ul>
+</section>
+<section id="section-1" class="slide level2 smaller">
+<h2></h2>
+<ul>
+<li class="fragment">We have a dataset of obervations of email <span class="math inline">\(E \in [0, 1]^{d}, y \in [0, 1]\)</span> where;
+<ul>
+<li class="fragment"><span class="math inline">\(y_i\)</span> = <span class="math inline">\(1\)</span> <code>if</code> <code>SPAM</code> else <span class="math inline">\(0\)</span></li>
+<li class="fragment"><span class="math inline">\(E_{ij}\)</span> = <span class="math inline">\(1\)</span> <code>if</code> <span class="math inline">\(v_j \in \text{E-mail}\)</span> else <span class="math inline">\(0\)</span> <span class="math inline">\(\forall \ j &gt; 1\)</span></li>
+</ul></li>
+<li class="fragment">Hence we have that for a given observation <span class="math inline">\((E_i, y_i)\)</span>, the corresponding probability under our given model is:</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{align*}
+\operatorname{Pr}(E_i, y_i) &amp;= \operatorname{Pr}(y=y_i) \times \operatorname{Pr}(E_i | y=y_i) \\
+&amp;= \operatorname{Pr}(y=y_i) \times \prod_{j=1}^{d} \operatorname{Pr}(E_{ij} = 1)
+\end{align*}
+\]</span></p>
+<ul>
+<li class="fragment">And by extension, the likelihood for <span class="math inline">\(N\)</span> observations of <span class="math inline">\(\{E_i, y_i\}_{i=1}^{n}\)</span> can be written down:</li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{align*}
+\text{likelihood}(E_i, y_i) &amp;= \prod_{i=1}^{N} \left\{ \operatorname{Pr}(y=y_i) \times \prod_{j=1}^{d} \operatorname{Pr}(E_{ij} = 1|y=y_i) \right\}
+\end{align*}
+\]</span></p>
+<ul>
+<li class="fragment">Perform MLE!</li>
+<li class="fragment">Are we missing anything?</li>
+</ul>
+</div>
+</section>
+<section id="classification" class="slide level2">
+<h2>Classification</h2>
+<ul>
+<li class="fragment">During inference we only get some <span class="math inline">\(E_t\)</span> as input. How to classify?</li>
+<li class="fragment">Find <span class="math inline">\(\operatorname{Pr}(y_t|E_t)\)</span> (Bayes’ Theorem);</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+\operatorname{Pr}(y_t|E_t) = \frac{\operatorname{Pr}(y_t) \operatorname{Pr}(E_t|y_t)}{\operatorname{Pr}(E_t)}
+\]</span></p>
+<ul>
+<li class="fragment">What’s <span class="math inline">\(\operatorname{Pr}(E_t)\)</span>?</li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{align*}
+\operatorname{Pr}(E_t) &amp;= \sum_{y \in [0, 1]} \operatorname{Pr}(y) \times \operatorname{Pr}(E_t|y) \\
+&amp;\equiv \operatorname{Pr}(\text{SPAM}) \times \operatorname{Pr}(E_t|\text{SPAM}) \dots \\ &amp;\quad + \operatorname{Pr}(\text{HAM}) \times \operatorname{Pr}(E_t|\text{HAM})
+\end{align*}
+\]</span></p>
+</div>
+</section>
+<section id="inference" class="slide level2 smaller">
+<h2>Inference</h2>
+<ul>
+<li class="fragment">Calculate;
+<ol type="1">
+<li class="fragment"><span class="math inline">\(a = \operatorname{Pr}(\text{SPAM}) \times \operatorname{Pr}(E_t|\text{SPAM})\)</span></li>
+<li class="fragment"><span class="math inline">\(b = \operatorname{Pr}(\text{HAM}) \times \operatorname{Pr}(E_t|\text{HAM})\)</span></li>
+</ol></li>
+<li class="fragment">If <span class="math inline">\(a&gt;b\)</span> classify <code>SPAM</code> else <code>HAM</code>.</li>
+<li class="fragment">The Maximum-Likelihood estimates are the following:</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{align*}
+\operatorname{Pr}(\text{SPAM}) &amp;= \frac{\text{No. of SPAM E-mails}}{\text{Total No. of Emails}} \\ \\
+\operatorname{Pr}(\text{HAM}) &amp;= 1-\operatorname{Pr}(\text{SPAM})
+\end{align*}
+\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{align*}
+\operatorname{Pr}(E_{tj} = 1 | \text{SPAM}) &amp;= \frac{\text{No. of SPAM E-mails consisting Word }j}{\text{Total No. of SPAM E-mails}} \\ \\ \\
+\operatorname{Pr}(E_{tj} = 1 | \text{HAM}) &amp;= \frac{\text{No. of HAM E-mails consisting Word }j}{\text{Total No. of HAM E-mails}}
+\end{align*}
+\]</span></p>
+</div>
+</section></section>
+<section>
+<section id="continous-modelling" class="title-slide slide level1 center">
+<h1>Continous Modelling</h1>
+
+</section>
+<section id="distribution-of-weights" class="slide level2">
+<h2>Distribution of weights</h2>
+<ul>
+<li class="fragment">Suppose you collect measurement of weights from some men (selected at random) in your neighbourhood;</li>
+</ul>
+<div class="fragment">
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Weights (kg)</strong></td>
+<td>61.62</td>
+<td>66.44</td>
+<td>59.95</td>
+<td>66.1</td>
+<td>62.71</td>
+<td>63.65</td>
+<td>68.66</td>
+<td>65.82</td>
+<td>65.48</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment">Want to construct a <em>generative</em> model</li>
+<li class="fragment">The <em>Gaussian</em> Distribution is a good choice</li>
+</ul>
+</div>
+</section>
+<section id="gaussiannormal-distribution-i.e.-curve" class="slide level2 smaller">
+<h2>Gaussian/Normal Distribution i.e.&nbsp;🔔 curve</h2>
+<ul>
+<li class="fragment">Models a continuous random variable. Has the following density (parametrized by mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>);</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+f(x|\mu, \sigma^2) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="files/normal_pdf.png" class="fragment quarto-figure quarto-figure-center" height="350"></p>
+</figure>
+</div>
+<ul>
+<li class="fragment">How to find <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma^2\)</span>?</li>
+<li class="fragment">MLE!</li>
+</ul>
+</div>
+</section>
+<section id="mle-on-the-gaussian-distribution" class="slide level2">
+<h2>MLE on the Gaussian distribution</h2>
+<ul>
+<li class="fragment">For a set of observations <span class="math inline">\(\{x_i\}_{i=1}^n\)</span> the log-likelihood can be written as the following:</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{align*}
+\log(\text{likelihood}(\mu, \sigma^2)) &amp;= \sum \log f(x_i | \mu, \sigma^2) \\
+&amp;= -\frac{n}{2} \log(2\pi \sigma^2)-\frac{1}{2\sigma^2}\sum_{i=1}^n (x_i - \mu)^2
+\end{align*}
+\]</span></p>
+<ul>
+<li class="fragment">Taking derivates and setting to 0 yields the following estimates:</li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
+\hat{\mu} = \frac{1}{n}\sum_{i=1}^nx_i \quad ; \quad \sigma^2 = \frac{1}{n} \sum_{i=1}^n(x_i-\mu)^2
+\]</span></p>
+<ul>
+<li class="fragment">Using these formulas, we get that the <span class="math inline">\(\mathcal{N}(64.95, 2.79^2)\)</span> process best models our weight distribution.</li>
+</ul>
+</div>
+</section>
+<section id="an-addition" class="slide level2">
+<h2>An addition</h2>
+<ul>
+<li class="fragment">Suppose we augment our observations with the <em>heights</em>;</li>
+</ul>
+<div class="fragment">
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Weights (kg)</strong></td>
+<td>61.62</td>
+<td>66.44</td>
+<td>59.95</td>
+<td>66.1</td>
+<td>62.71</td>
+<td>63.65</td>
+<td>68.66</td>
+<td>65.82</td>
+<td>65.48</td>
+</tr>
+<tr class="even">
+<td><strong>Heights (cm)</strong></td>
+<td>165.29</td>
+<td>160.61</td>
+<td>161.95</td>
+<td>168.7</td>
+<td>164.03</td>
+<td>166.1</td>
+<td>167.93</td>
+<td>168.5</td>
+<td>164.17</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment">Possible approach - Model as 2 <em>i.i.d</em> Gaussians</li>
+<li class="fragment">Drawbacks?</li>
+</ul>
+</div>
+</section>
+<section id="some-plots" class="slide level2 smaller">
+<h2>Some plots</h2>
+<div class="r-stack">
+<p><img data-src="files/height_weight_scatter.png" class="fragment" data-fragment-index="1" height="350"></p>
+<p><img data-src="files/naive_normal.png" class="fragment" data-fragment-index="2" height="350"></p>
+<p><img data-src="files/multivariate_normal.png" class="fragment" data-fragment-index="3" height="350"></p>
+</div>
+<div class="fragment" data-fragment-index="1">
+<p>Scatter Plot of 100 <em>(Height,Weight)</em> examples</p>
+</div>
+<div class="fragment" data-fragment-index="2">
+<p>The <em>2 Independent Gaussians</em> Fit</p>
+</div>
+<div class="fragment" data-fragment-index="3">
+<p>The desirable fit</p>
+</div>
+<ul>
+<li class="fragment">The assumption of Class-Conditional Independence misses out on the implicit correlation between the classes <em>themselves</em>.</li>
+</ul>
+</section>
+<section id="contents-pending-to-be-added" class="slide level2">
+<h2>Contents pending to be added:</h2>
+<ul>
+<li class="fragment">Discuss Naive Bayes, Linear and Quadratic Discriminant Analysis</li>
+<li class="fragment">Introduce idea of clusters, unsupervised learning (add females)</li>
+<li class="fragment">Mixture of Gaussians, How to sample?</li>
 <li class="fragment">Discussion on concavity, and the MLE not being concave</li>
 <li class="fragment">Intro to the Majorization-Minimization framework.</li>
 <li class="fragment">Discussion of the EM algorithm, and latent variables</li>
 <li class="fragment">EM algorithm for GMMs, and obtaining MLE estimates</li>
-<li class="fragment">Example MLE on <em>censored</em> data</li>
-<li class="fragment">Explanation of EM in this context</li>
 </ul>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
