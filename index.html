@@ -7,7 +7,10 @@
 <link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="index_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="index_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
-<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="index_files/libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="index_files/libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.5.56">
 
   <meta name="author" content="Vivek Sivaramakrishnan">
@@ -34,6 +37,8 @@
   <link href="index_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="index_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="index_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="index_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="index_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
   <link href="index_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
@@ -337,14 +342,6 @@ Vivek Sivaramakrishnan
 </div>
 
 </section>
-<section class="slide level2">
-
-<div class="fragment">
-<blockquote>
-<p>Note: This is the preview-draft for the final presentation. Changes (mostly in the form of content additions, visualizations, style refinements) will apply.</p>
-</blockquote>
-</div>
-</section>
 <section>
 <section id="pi" class="title-slide slide level1 center">
 <h1><span class="math inline">\(\pi\)</span></h1>
@@ -359,8 +356,18 @@ Vivek Sivaramakrishnan
 <ul>
 <li class="fragment">Consider a unit-radius circle and a square (with <code>side-length=2</code>) centered at the origin</li>
 <li class="fragment">Theoretically we know that the ratio of the area of the circle to the square is equal to <span class="math inline">\(\pi/4\)</span></li>
+</ul>
+<div class="fragment">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="files/circle_sq.png" width="300"></p>
+<figcaption>Circle with radii 1</figcaption>
+</figure>
+</div>
+<ul>
 <li class="fragment">How to approximate this?</li>
 </ul>
+</div>
 </section>
 <section id="numerical-approximation" class="slide level2">
 <h2>Numerical Approximation 🧮</h2>
@@ -379,13 +386,30 @@ Vivek Sivaramakrishnan
 </ul>
 </div>
 </section>
+<section id="a-probabilistic-flavour" class="slide level2">
+<h2>A Probabilistic Flavour</h2>
+<ul>
+<li class="fragment">Suppose you choose a point at random (how?) inside the square</li>
+<li class="fragment">What’s the probability of this point lying inside the circle?</li>
+<li class="fragment">It’s <span class="math inline">\(\pi/4\)</span>!</li>
+<li class="fragment">Now suppose you choose some <span class="math inline">\(n\)</span> points at random, and count the number of points that fall inside the circle (let this be <span class="math inline">\(p\)</span>)</li>
+<li class="fragment">Then the fraction <span class="math inline">\(\frac{p}{n}\)</span> is your guess/estimate for the probability by counting!</li>
+</ul>
+</section>
 <section id="approximation-by-simulation" class="slide level2">
 <h2>Approximation by Simulation 🤖</h2>
 <ul>
-<li class="fragment">Sample some <span class="math inline">\(n\)</span> observations <span class="math inline">\((U_1, U_2)\)</span> where <span class="math inline">\(U_1, U_2 \overbrace{\sim}^{\text{i.i.d}} \mathcal{U}[-1, 1]\)</span></li>
-<li class="fragment">As in the previous slide perform the same computations to get <span class="math inline">\(p_{\text{circle}}, p_{\text{square}}\)</span> and finally <span class="math inline">\(\pi/4\)</span></li>
-<li class="fragment">Hold on! How do you sample from <span class="math inline">\(\mathcal{U}[-1, 1]\)</span>??</li>
-<li class="fragment">Before that, how do you even generate random numbers?</li>
+<li class="fragment">From <a href="https://en.wikipedia.org/wiki/Law_of_large_numbers">Wikipedia</a>:</li>
+</ul>
+<div class="smaller fragment">
+<blockquote>
+<p>In probability theory, the law of large numbers (LLN) is a mathematical law that states that the average of the results obtained from a large number of independent random samples converges to the true value, if it exists. More formally, the LLN states that given a sample of independent and identically distributed values, the sample mean converges to the true mean.</p>
+</blockquote>
+</div>
+<ul>
+<li class="fragment"><p>By the <em>Law of Large Numbers</em>, your estimate, as <span class="math inline">\(n\rightarrow\infty\)</span> converges in probability to <span class="math inline">\(\pi/4\)</span>!</p></li>
+<li class="fragment"><p>Ok great. Now how does one sample a point <em>i.i.d</em>, <em>at random</em> from a square?</p></li>
+<li class="fragment"><p>More fundamentally (yet powerful, as we shall soon see) how to sample from <span class="math inline">\(\mathcal{U}[0, 1]\)</span>?</p></li>
 </ul>
 </section>
 <section id="randomness" class="slide level2">
@@ -415,11 +439,19 @@ X_{n+1} =  (aX_n + c) \mod{m}
 </ul>
 </div>
 </section>
-<section id="mcg-coding-excercise" class="slide level2">
-<h2>MCG Coding Excercise</h2>
+<section id="mcg" class="slide level2">
+<h2>MCG</h2>
 <ul>
-<li class="fragment">Initially with some small constants</li>
-<li class="fragment">Discussion on how to select constants to perfectly emulate randomness</li>
+<li class="fragment">How to set these constants?</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="https://upload.wikimedia.org/wikipedia/commons/0/02/Linear_congruential_generator_visualisation.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img data-src="https://upload.wikimedia.org/wikipedia/commons/0/02/Linear_congruential_generator_visualisation.svg" class="fragment quarto-figure quarto-figure-center" style="width:100.0%"></a></p>
+</figure>
+</div>
+<ul>
+<li class="fragment">Based on the bits of your machine, it is recommended to set <span class="math inline">\(m = 2^{31} − 1\)</span> and <span class="math inline">\(a = 75\)</span></li>
+<li class="fragment">The SOTA method for random generation is the <em>Mersenne-Twister generator</em>, but this is outside the scope of this workshop</li>
 </ul>
 </section>
 <section id="ok-now-what" class="slide level2">
@@ -428,7 +460,6 @@ X_{n+1} =  (aX_n + c) \mod{m}
 <li class="fragment">How to generate samples from <span class="math inline">\(\mathcal{U}[0, 1]\)</span>?</li>
 <li class="fragment">The above forms the backbone for any <em>random-sampling</em> method in general, as we’ll soon see</li>
 <li class="fragment">Just modify our <code>MCG</code> to instead return <span class="math inline">\(\frac{X_{n+1}}{m}\)</span>!</li>
-<li class="fragment">We’ll use this generator for the rest of this workshop.</li>
 </ul>
 </section>
 <section id="back-to-pi-simulation" class="slide level2">
@@ -436,21 +467,14 @@ X_{n+1} =  (aX_n + c) \mod{m}
 <ul>
 <li class="fragment">How to sample from <span class="math inline">\(\mathcal{U}[-1, 1]\)</span>?</li>
 <li class="fragment">Observe we can use the previous method to get <span class="math inline">\(u_i\)</span>, which are realizations of <span class="math inline">\(\mathcal{U}[0, 1]\)</span></li>
-<li class="fragment">Then it follows that <span class="math inline">\(2 \times u_i -1\)</span> are realizations of <span class="math inline">\(\mathcal{U}[-1, 1]\)</span>! (Verify this by coding and plotting)</li>
-<li class="fragment">Now we have all the tools to approximate <span class="math inline">\(\pi\)</span> (Code)</li>
+<li class="fragment">Then it follows that <span class="math inline">\(2 \times u_i -1\)</span> are realizations of <span class="math inline">\(\mathcal{U}[-1, 1]\)</span>!</li>
+<li class="fragment">Now we have all the tools to approximate <span class="math inline">\(\pi\)</span></li>
 </ul>
 </section>
 <section id="another-approach---buffons-needle" class="slide level2">
 <h2>Another approach - Buffon’s Needle</h2>
 <iframe width="1000" height="800" src="files\buffon.html">
 </iframe>
-</section>
-<section id="another-approach---buffons-needle-1" class="slide level2">
-<h2>Another approach - Buffon’s Needle</h2>
-<p>Buffon’s needle experiment is not a very efficient method of approximating <span class="math inline">\(\pi\)</span>;</p>
-<ul>
-<li class="fragment">To estimate <span class="math inline">\(\pi\)</span> to 4 d.p. we would require about 100 million tosses!</li>
-</ul>
 </section></section>
 <section id="approximating-e" class="title-slide slide level1 center">
 <h1>Approximating <span class="math inline">\(e\)</span></h1>
@@ -472,15 +496,13 @@ X_{n+1} =  (aX_n + c) \mod{m}
 </section>
 <section class="slide level2">
 
-<p>Robin must fire as many arrows as she can, such that each arrow is closer to the center of the target than the previous arrow.</p>
-<div class="fragment">
-<p>For example, if Robin fires three arrows, each closer to the center than the previous, but the fourth arrow is farther than the third, then she is done with the challenge and her score is four.</p>
-</div>
-<div class="fragment">
-<p>On average, what score can Robin expect to achieve in this archery challenge?</p>
+<ul>
+<li class="fragment"><p>Robin must fire as many arrows as she can, such that each arrow is closer to the center of the target than the previous arrow.</p></li>
+<li class="fragment"><p>For example, if Robin fires three arrows, each closer to the center than the previous, but the fourth arrow is farther than the third, then she is done with the challenge and her score is four.</p></li>
+<li class="fragment"><p>On average, what score can Robin expect to achieve in this archery challenge?</p></li>
+</ul>
 <div class="footer">
 <p>Problem from: <a href="https://fivethirtyeight.com/features/can-you-hunt-for-the-mysterious-numbers/">https://fivethirtyeight.com/features/can-you-hunt-for-the-mysterious-numbers/</a></p>
-</div>
 </div>
 </section>
 <section id="making-it-simpler" class="slide level2">
@@ -488,7 +510,8 @@ X_{n+1} =  (aX_n + c) \mod{m}
 <ul>
 <li class="fragment">Equivalent problem: Keep sampling <span class="math inline">\(r_i\)</span> from <span class="math inline">\(\mathcal{U}[0, 1]\)</span> and stop when <span class="math inline">\(r_{i+1} &lt; r_i\)</span></li>
 <li class="fragment">Why?</li>
-<li class="fragment">A little hard; Easy to solve by <em>simulation</em></li>
+<li class="fragment">A little involved to solve analytically;</li>
+<li class="fragment">Easy to approximate by <em>simulation</em></li>
 <li class="fragment">It’s <span class="math inline">\(e\)</span>, again! 🎯</li>
 </ul>
 </section></section>
@@ -510,7 +533,7 @@ X_{n+1} =  (aX_n + c) \mod{m}
 <li class="fragment">For this problem, we can continue sampling until we reach the second peak,</li>
 <li class="fragment">and return the distance between the first and second peaks.</li>
 <li class="fragment">We can try the same for different continuous distributions too;</li>
-<li class="fragment">but the answer is always exactly <span class="math inline">\(3\)</span>! (no, not <code>3 factorial</code> 🙄)</li>
+<li class="fragment">but the answer is always exactly <span class="math inline">\(3\)</span>!</li>
 </ul>
 </section></section>
 <section>
@@ -671,8 +694,8 @@ X_{n+1} =  (aX_n + c) \mod{m}
 \end{align*}\]</span></p>
 </div>
 </section>
-<section id="maximizng-the-likelihood" class="slide level2 smaller">
-<h2>Maximizng the Likelihood 🎯</h2>
+<section id="maximizing-the-likelihood" class="slide level2 smaller">
+<h2>Maximizing the Likelihood 🎯</h2>
 <div class="columns">
 <div class="column fragment" data-fragment-index="1" style="width:40%;">
 <p>Straightforward;</p>
@@ -740,20 +763,20 @@ l'(p^*) &amp;=  \frac{13}{p^*} - \frac{20-13}{1-p^*} = 0 \\
 </div>
 </section></section>
 <section>
-<section id="spam-email-classification" class="title-slide slide level1 center">
-<h1>SPAM email classification</h1>
+<section id="spam-e-mail-classification" class="title-slide slide level1 center">
+<h1>SPAM E-Mail 📧 classification</h1>
 <ul>
 <li class="fragment">Suppose we have a dataset of e-mails classified as <code>SPAM</code> or <code>NOT SPAM</code>/<code>HAM</code>.</li>
-<li class="fragment">Algorithm to classify an unseen email correctly.</li>
+<li class="fragment">Algorithm to classify an un-labelled email correctly.</li>
 </ul>
 </section>
 <section id="modelling-1" class="slide level2">
 <h2>Modelling</h2>
 <ul>
-<li class="fragment">Just as in the whiskers 😼 example, we’ll now cook up a <em>generative</em> model (On which we can further perform MLE);
+<li class="fragment">Just as in the whiskers 😼 example, we’ll now hypothesize a <em>generative</em> model (On which we can further perform MLE);
 <ol type="1">
 <li class="fragment">First, decide if you want to generate a <code>SPAM</code> or <code>HAM</code> email using a coin-toss</li>
-<li class="fragment">Next, generate the email using <span class="math inline">\(d\)</span> coin-tosses</li>
+<li class="fragment">Next, generate the email using <span class="math inline">\(d\)</span> (biased) coin-tosses</li>
 </ol></li>
 </ul>
 <div class="fragment">
@@ -763,7 +786,7 @@ l'(p^*) &amp;=  \frac{13}{p^*} - \frac{20-13}{1-p^*} = 0 \\
 <section id="section" class="slide level2 smaller">
 <h2></h2>
 <div class="fragment">
-<iframe width="1000" height="550" src="logmle.html">
+<iframe width="1000" height="550" src="files/logmle.html">
 </iframe>
 </div>
 <ul>
@@ -800,7 +823,7 @@ l'(p^*) &amp;=  \frac{13}{p^*} - \frac{20-13}{1-p^*} = 0 \\
 \end{align*}
 \]</span></p>
 <ul>
-<li class="fragment">Perform MLE!</li>
+<li class="fragment">Perform MLE to find the required parameters!</li>
 <li class="fragment">Are we missing anything?</li>
 </ul>
 </div>
@@ -857,49 +880,64 @@ l'(p^*) &amp;=  \frac{13}{p^*} - \frac{20-13}{1-p^*} = 0 \\
 </div>
 </section></section>
 <section>
-<section id="continous-modelling" class="title-slide slide level1 center">
-<h1>Continous Modelling</h1>
-
-</section>
-<section id="distribution-of-weights" class="slide level2">
-<h2>Distribution of weights</h2>
+<section id="continuous-modelling" class="title-slide slide level1 center">
+<h1>Continuous Modelling</h1>
+<div class="columns">
+<div class="column fragment" data-fragment-index="1" style="width:80%;">
 <ul>
-<li class="fragment">Suppose you collect measurement of weights from some men (selected at random) in your neighbourhood;</li>
+<li>Suppose you collect measurement of weights from some men (selected at random) in your neighbourhood;</li>
 </ul>
-<div class="fragment">
-<table class="caption-top" style="width:100%;">
-<colgroup>
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-</colgroup>
+<div class="fragment" data-fragment-index="3">
+<ul>
+<li>Want to construct a <em>generative</em> model</li>
+</ul>
+</div>
+<div class="fragment" data-fragment-index="4">
+<ul>
+<li>The <em>Gaussian</em> Distribution is a good choice</li>
+</ul>
+</div>
+</div><div class="column fragment" data-fragment-index="2" style="width:20%;">
+<table class="table-striped caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Weights (kg)</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><strong>Weights (kg)</strong></td>
-<td>61.62</td>
-<td>66.44</td>
-<td>59.95</td>
-<td>66.1</td>
-<td>62.71</td>
-<td>63.65</td>
-<td>68.66</td>
-<td>65.82</td>
-<td>65.48</td>
+<td style="text-align: left;">61.62</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">66.44</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">59.95</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">66.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">62.71</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">63.65</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">68.66</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">65.82</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">65.48</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">69.07</td>
 </tr>
 </tbody>
 </table>
-<ul>
-<li class="fragment">Want to construct a <em>generative</em> model</li>
-<li class="fragment">The <em>Gaussian</em> Distribution is a good choice</li>
-</ul>
-</div>
+</div></div>
 </section>
 <section id="gaussiannormal-distribution-i.e.-curve" class="slide level2 smaller">
 <h2>Gaussian/Normal Distribution i.e.&nbsp;🔔 curve</h2>
@@ -941,69 +979,93 @@ f(x|\mu, \sigma^2) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
 <p><span class="math display">\[
 \hat{\mu} = \frac{1}{n}\sum_{i=1}^nx_i \quad ; \quad \sigma^2 = \frac{1}{n} \sum_{i=1}^n(x_i-\mu)^2
 \]</span></p>
-<ul>
-<li class="fragment">Using these formulas, we get that the <span class="math inline">\(\mathcal{N}(64.95, 2.79^2)\)</span> process best models our weight distribution.</li>
-</ul>
+</div>
+</section>
+<section id="section-2" class="slide level2 smaller">
+<h2></h2>
+<p>Using these formulas, we get that the <span class="math inline">\(\mathcal{N}(64.95, 2.79^2)\)</span> process best models our weight distribution.</p>
+<div class="fragment">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="files/height_fit.png" class="quarto-figure quarto-figure-center"></p>
+</figure>
+</div>
 </div>
 </section>
 <section id="an-addition" class="slide level2">
 <h2>An addition</h2>
+<div class="columns">
+<div class="column fragment" data-fragment-index="1" style="width:80%;">
 <ul>
-<li class="fragment">Suppose we augment our observations with the <em>heights</em>;</li>
+<li>Suppose we augment our observations with the <em>heights</em>;</li>
 </ul>
-<div class="fragment">
-<table class="caption-top" style="width:100%;">
-<colgroup>
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-</colgroup>
+<div class="fragment" data-fragment-index="3">
+<ul>
+<li>Possible approach - Model as 2 <em>i.i.d</em> Gaussians</li>
+</ul>
+</div>
+<div class="fragment" data-fragment-index="4">
+<p><img data-src="files/iid_fits.png"> - Drawbacks?</p>
+</div>
+</div><div class="column fragment" data-fragment-index="2" style="width:20%;">
+<table class="table-striped caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Weights (kg)</th>
+<th style="text-align: right;">Heights (cm)</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><strong>Weights (kg)</strong></td>
-<td>61.62</td>
-<td>66.44</td>
-<td>59.95</td>
-<td>66.1</td>
-<td>62.71</td>
-<td>63.65</td>
-<td>68.66</td>
-<td>65.82</td>
-<td>65.48</td>
+<td style="text-align: left;">61.62</td>
+<td style="text-align: right;">165.29</td>
 </tr>
 <tr class="even">
-<td><strong>Heights (cm)</strong></td>
-<td>165.29</td>
-<td>160.61</td>
-<td>161.95</td>
-<td>168.7</td>
-<td>164.03</td>
-<td>166.1</td>
-<td>167.93</td>
-<td>168.5</td>
-<td>164.17</td>
+<td style="text-align: left;">66.44</td>
+<td style="text-align: right;">160.61</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">59.95</td>
+<td style="text-align: right;">161.95</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">66.1</td>
+<td style="text-align: right;">168.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">62.71</td>
+<td style="text-align: right;">164.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">63.65</td>
+<td style="text-align: right;">166.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">68.66</td>
+<td style="text-align: right;">167.93</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">65.82</td>
+<td style="text-align: right;">168.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">65.48</td>
+<td style="text-align: right;">164.17</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">69.07</td>
+<td style="text-align: right;">167.92</td>
 </tr>
 </tbody>
 </table>
-<ul>
-<li class="fragment">Possible approach - Model as 2 <em>i.i.d</em> Gaussians</li>
-<li class="fragment">Drawbacks?</li>
-</ul>
-</div>
+</div></div>
 </section>
 <section id="some-plots" class="slide level2 smaller">
 <h2>Some plots</h2>
 <div class="r-stack">
-<p><img data-src="files/height_weight_scatter.png" class="fragment" data-fragment-index="1" height="350"></p>
-<p><img data-src="files/naive_normal.png" class="fragment" data-fragment-index="2" height="350"></p>
-<p><img data-src="files/multivariate_normal.png" class="fragment" data-fragment-index="3" height="350"></p>
+<p><img data-src="files/height_weight_scatter.png" class="fragment" data-fragment-index="1" height="450"></p>
+<p><img data-src="files/naive_normal.png" class="fragment" data-fragment-index="2" height="450"></p>
+<p><img data-src="files/multivariate_normal.png" class="fragment" data-fragment-index="3" height="450"></p>
 </div>
 <div class="fragment" data-fragment-index="1">
 <p>Scatter Plot of 100 <em>(Height,Weight)</em> examples</p>
@@ -1015,26 +1077,450 @@ f(x|\mu, \sigma^2) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
 <p>The desirable fit</p>
 </div>
 <ul>
-<li class="fragment">The assumption of Class-Conditional Independence misses out on the implicit correlation between the classes <em>themselves</em>.</li>
+<li class="fragment">The assumption of <em>Independence</em> need not hold in practice.</li>
 </ul>
-</section>
-<section id="contents-pending-to-be-added" class="slide level2">
-<h2>Contents pending to be added:</h2>
+</section></section>
+<section>
+<section id="the-multivariate-gaussian-distribution" class="title-slide slide level1 center">
+<h1>The Multivariate Gaussian Distribution</h1>
 <ul>
-<li class="fragment">Discuss Naive Bayes, Linear and Quadratic Discriminant Analysis</li>
-<li class="fragment">Introduce idea of clusters, unsupervised learning (add females)</li>
-<li class="fragment">Mixture of Gaussians, How to sample?</li>
-<li class="fragment">Discussion on concavity, and the MLE not being concave</li>
-<li class="fragment">Intro to the Majorization-Minimization framework.</li>
-<li class="fragment">Discussion of the EM algorithm, and latent variables</li>
-<li class="fragment">EM algorithm for GMMs, and obtaining MLE estimates</li>
+<li class="fragment">Models a continuous random variable <span class="math inline">\(\mathbf{x} \in \mathbb{R}^d\)</span>. Has the following density (parametrized by mean <span class="math inline">\(\mu \in \mathbb{R}^d\)</span> and covariance matrix <span class="math inline">\(\Sigma\)</span>);</li>
 </ul>
-<div class="quarto-auto-generated-content">
+<div class="fragment">
+<p><span class="math display">\[
+f(\mathbf{x}|\mathbf{\mu}, \Sigma^2) = \frac{1}{\sqrt{2\pi|\Sigma|}}e^{-\frac{1}{2}(\mathbf{x}-\mu)^T\Sigma^{-1}(\mathbf{x}-\mu)}
+\]</span></p>
+<ul>
+<li class="fragment">For a set of observations <span class="math inline">\(\{\mathbf{x}_i\}_{i=1}^{n}\)</span>, the Maximum-Likelihood estimates for the parameters are:</li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
+\hat{\mu} = \frac{1}{n}\sum_{i=1}^n\mathbf{x}_i \quad ; \quad \hat{\Sigma} = \frac{1}{n} \sum_{i=1}^n(\mathbf{x}_i-\mu)(\mathbf{x}_i-\mu)^T
+\]</span></p>
+</div>
+</section>
+<section id="gender-classification" class="slide level2 smaller">
+<h2>Gender Classification</h2>
+<div class="columns">
+<div class="column fragment" data-fragment-index="1" style="width:65%;">
+<ul>
+<li>Suppose we also collect data from women in the same neighbourhood (selected at random);</li>
+</ul>
+<div class="fragment" data-fragment-index="3">
+<p><img data-src="files/male_female_scatter.png"></p>
+</div>
+</div><div class="column smaller fragment" data-fragment-index="2" style="width:35%;">
+<table class="table-striped caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Weight (kg)</th>
+<th style="text-align: right;">Height (cm)</th>
+<th style="text-align: right;">Gender</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">60.59</td>
+<td style="text-align: right;">171.46</td>
+<td style="text-align: right;">♂️</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">59.95</td>
+<td style="text-align: right;">171.35</td>
+<td style="text-align: right;">♂️</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">61.59</td>
+<td style="text-align: right;">172.62</td>
+<td style="text-align: right;">♂️</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">53.65</td>
+<td style="text-align: right;">159.6</td>
+<td style="text-align: right;">♀️</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">56.81</td>
+<td style="text-align: right;">158.15</td>
+<td style="text-align: right;">♀️</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">55.48</td>
+<td style="text-align: right;">157.67</td>
+<td style="text-align: right;">♀️</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">56.13</td>
+<td style="text-align: right;">159.67</td>
+<td style="text-align: right;">♀️</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">46.96</td>
+<td style="text-align: right;">154.96</td>
+<td style="text-align: right;">♀️</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">73.84</td>
+<td style="text-align: right;">182.46</td>
+<td style="text-align: right;">♂️</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">53.56</td>
+<td style="text-align: right;">158.03</td>
+<td style="text-align: right;">♀️</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">60.82</td>
+<td style="text-align: right;">162.63</td>
+<td style="text-align: right;">♀️</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">60.63</td>
+<td style="text-align: right;">172.99</td>
+<td style="text-align: right;">♂️</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">72.0</td>
+<td style="text-align: right;">182.14</td>
+<td style="text-align: right;">♂️</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">72.02</td>
+<td style="text-align: right;">178.36</td>
+<td style="text-align: right;">♂️</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">59.44</td>
+<td style="text-align: right;">162.51</td>
+<td style="text-align: right;">♀️</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment" data-fragment-index="4">
+<ul>
+<li><code>GOAL</code>: Classify <em>gender</em> given <em>(Height, Weight)</em></li>
+</ul>
+</div>
+</div></div>
+</section>
+<section id="generation-process" class="slide level2">
+<h2>Generation Process</h2>
+<div class="columns">
+<div class="column fragment" data-fragment-index="1" style="width:70%;">
+<ul>
+<li>Toss a coin to decide gender</li>
+</ul>
+<div class="fragment" data-fragment-index="2">
+<ul>
+<li>Sample height and weight from the appropriate conditional distribution.</li>
+</ul>
+</div>
+<div class="fragment" data-fragment-index="4">
+<blockquote>
+<p>*The scaffolding of the Gaussian MLE Fitting process impacts the final behaviour of model</p>
+</blockquote>
+</div>
+<div class="fragment" data-fragment-index="3">
+<ul>
+<li>Finally to classify gender for unlabelled points, obtain the probability of <em>generation</em> for each class, and predict class with the highest probability.</li>
+</ul>
+</div>
+</div><div class="column fragment" data-fragment-index="1" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="files/gender_toss.png" class="quarto-figure quarto-figure-center" style="width:50.0%"></p>
+</figure>
+</div>
+<div class="fragment" data-fragment-index="2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="files/male_female_gaussian.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img data-src="files/male_female_gaussian.png" class="quarto-figure quarto-figure-center"></a></p>
+</figure>
+</div>
+</div>
+</div></div>
+</section>
+<section id="mle" class="slide level2">
+<h2>MLE</h2>
+<ul>
+<li class="fragment">Suppose <span class="math inline">\(D_{♂️}\)</span> and <span class="math inline">\(D_{♀️}\)</span> are partitions of the dataset by the gender;</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+\operatorname{Pr}(♀️) = \frac{|D_{♀️}|}{|D_{♀️}| + |D_{♂️}|} \quad ; \quad \operatorname{Pr}(♂️) = 1-\operatorname{Pr}(♀️)
+\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
+\mu_g = \frac{1}{|D_g|}\sum_{i=1}^{|D_g|}D_g^i \quad ; \quad g \in [♀️, ♂️]
+\]</span></p>
+<ul>
+<li class="fragment">There are <em>variants</em> to how the <em>covariance</em> matrix can be obtained;</li>
+</ul>
+</div>
+<div class="fragment">
+<p>The general form of a covariance matrix is the following:</p>
+<p><span class="math display">\[
+\Sigma = \begin{pmatrix} \operatorname{Var}(X) &amp; \operatorname{Cov}(X, Y) \\ \operatorname{Cov}(X, Y) &amp; \operatorname{Var}(Y) \end{pmatrix}
+\]</span></p>
+</div>
+</section>
+<section id="section-3" class="slide level2" style="font-size: 15px;">
+<h2></h2>
+<div class="columns">
+<div class="column fragment" data-fragment-index="1" style="width:33%;">
+<!-- -->
+<h4 id="gaussian-naive-bayes">Gaussian Naive Bayes</h4>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="files/gnb.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img data-src="files/gnb.png" class="quarto-figure quarto-figure-center" width="300"></a></p>
+</figure>
+</div>
+<p><span class="math display">\[
+\Sigma_g = \begin{pmatrix} \operatorname{Var}(X_g) &amp; 0 \\ 0 &amp; \operatorname{Var}(Y_g) \end{pmatrix}
+\]</span></p>
+</div><div class="column fragment" data-fragment-index="3" style="width:33%;">
+<!-- -->
+<h4 id="linear-discriminant-analysis">Linear Discriminant Analysis</h4>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="files/LDA.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img data-src="files/LDA.png" class="quarto-figure quarto-figure-center" width="300"></a></p>
+</figure>
+</div>
+<ul>
+<li><em>Shared</em> co-variance matrix;</li>
+</ul>
+<p><span class="math display">\[
+\Sigma_g = \begin{pmatrix} \operatorname{Var}(X_c) &amp; \operatorname{Cov}(X_c, Y_c) \\ \operatorname{Cov}(X_c, Y_c) &amp; \operatorname{Var}(Y_c) \end{pmatrix}
+\]</span></p>
+<p>where, <span class="math inline">\(X_c = \texttt{concatenate}([\underbrace{X_♀️ - \mu_♀️}_{\texttt{mean-centering}}], [X_♂️ - \mu_♂️])\)</span></p>
+</div><div class="column fragment" data-fragment-index="2" style="width:33%;">
+<!-- -->
+<h4 id="quadratic-discriminant-analysis">Quadratic Discriminant Analysis</h4>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="files/qda.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img data-src="files/qda.png" class="quarto-figure quarto-figure-center" width="300"></a></p>
+</figure>
+</div>
+<p><span class="math display">\[
+\Sigma_g = \begin{pmatrix} \operatorname{Var}(X_g) &amp; \operatorname{Cov}(X_g, Y_g) \\ \operatorname{Cov}(X_g, Y_g) &amp; \operatorname{Var}(Y_g) \end{pmatrix}
+\]</span></p>
+</div></div>
+</section>
+<section id="section-4" class="slide level2 smaller">
+<h2>🌋♨️</h2>
+<div class="columns">
+<div class="column" style="width:67%;">
+<ul>
+<li class="fragment">This is the Old Faithful Geyser in Yellowstone National Park, United States.</li>
+<li class="fragment">According to their <a href="https://nps.gov/teachers/classrooms/predict-old-faithful.htm">website</a> the eruption time (interval) of the geyser can be predicted as follows:</li>
+</ul>
+<div class="fragment">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Length of Eruption</th>
+<th>Interval Until Next Eruption</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>&lt; 3 minutes</td>
+<td><span class="math inline">\(68 \pm 10\)</span> minutes</td>
+</tr>
+<tr class="even">
+<td>&gt; 3 minutes</td>
+<td><span class="math inline">\(94 \pm 10\)</span> minutes</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fragment">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="files/old_faithful_scatter.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img data-src="files/old_faithful_scatter.png" class="quarto-figure quarto-figure-center" width="350"></a></p>
+</figure>
+</div>
+</div>
+<ul>
+<li class="fragment">Modelling?</li>
+</ul>
+</div><div class="column" style="width:33%;">
+<iframe width="384" height="480" src="https://www.youtube-nocookie.com/embed/Q8oZoVC8rGc?si=LM1woQoPZpviZ6c8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
+</iframe>
+</div></div>
+</section></section>
+<section>
+<section id="mixture-modelling" class="title-slide slide level1 center">
+<h1>Mixture Modelling</h1>
+<ul>
+<li class="fragment">It is clear from the plot that the distribution is a mixture of <span class="math inline">\(2\)</span> multivariate Gaussians;</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+f(\mathbf{x}) = \pi_1 \ \mathcal{N}(\mathbf{x}|\mu_1, \Sigma^2_1) + \pi_2 \ \mathcal{N}(\mathbf{x}|\mu_2, \Sigma^2_2)
+\]</span></p>
+<p>where <span class="math inline">\(\mathcal{N}\)</span> is the density of the normal distribution.</p>
+<ul>
+<li class="fragment">How to estimate parameters?</li>
+<li class="fragment"><em>MLE*</em></li>
+</ul>
+</div>
+</section>
+<section id="simpler-problem" class="slide level2 smaller">
+<h2>Simpler Problem</h2>
+<div class="columns">
+<div class="column" style="width:80%;">
+<p>Let’s consider a simpler uni-variate problem;</p>
+<ul>
+<li class="fragment">Suppose when you were recording heights and weights, by mistake you had recorded them in the same column.</li>
+<li class="fragment">You now want to <em>cluster</em> them so you can segeregate them back into columns. How to go about this?</li>
+<li class="fragment">As before, we formulate a <strong>generation process</strong> for our data:
+<ul>
+<li class="fragment">First toss a coin to decide if you want to generate a height value or weight value</li>
+<li class="fragment">Based on the toss, go ahead and generate your value (using a gaussian in this case)</li>
+</ul></li>
+<li class="fragment">Based on the above process, we get the following <span class="math inline">\(\log\)</span> likelihood function;</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+\log(\text{likelihood}(\theta)) = \sum_{i=1}^{N} \log \Bigg[ \sum_{k=1}^{2} \pi_{k} \frac{1}{\sqrt{2 \pi \sigma^{2}}} e^{ -\frac{\left(x_{i}-\mu_{k}\right)^{2}}{2 \sigma_{k}^{2}}} \Bigg]
+\]</span></p>
+<p>where <span class="math inline">\(\pi_k\)</span> is the probability of selecting cluster <span class="math inline">\(k\)</span> (height/weight) in the toss, and <span class="math inline">\(\mu_k, \sigma^2_k\)</span> define the density of the Gaussian (conditioned on the toss)</p>
+</div>
+<ul>
+<li class="fragment">Turns out this cannot be maximized analytically. Why?</li>
+<li class="fragment">Is there a unique solution?</li>
+<li class="fragment">The likelihood (and by extension the <span class="math inline">\(\log\)</span> likelihood) are not <em>concave</em> functions</li>
+</ul>
+</div><div class="column" style="width:20%;">
+<table class="table-striped caption-top">
+<thead>
+<tr class="header">
+<th>⚖️(kg/cm??)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>66.73</td>
+</tr>
+<tr class="even">
+<td>166.1</td>
+</tr>
+<tr class="odd">
+<td>164.31</td>
+</tr>
+<tr class="even">
+<td>165.65</td>
+</tr>
+<tr class="odd">
+<td>161.46</td>
+</tr>
+<tr class="even">
+<td>68.66</td>
+</tr>
+<tr class="odd">
+<td>167.37</td>
+</tr>
+<tr class="even">
+<td>61.86</td>
+</tr>
+<tr class="odd">
+<td>66.63</td>
+</tr>
+<tr class="even">
+<td>172.94</td>
+</tr>
+</tbody>
+</table>
+</div></div>
+</section>
+<section id="the-mm-framework" class="slide level2 smaller">
+<h2>The MM Framework</h2>
+<ul>
+<li class="fragment">Stands for Majorization-Minimization/<strong>Minorization-Maximization</strong></li>
+<li class="fragment">Iterative framework. Suppose we want to maximize some function <span class="math inline">\(f\)</span>.</li>
+<li class="fragment">Fix a starting point <span class="math inline">\(x_0\)</span>. Now for some <span class="math inline">\(k\)</span>;
+<ul>
+<li class="fragment">(<strong>Minorize</strong>) Construct a minorizing <em>surrogate</em> function <span class="math inline">\(\tilde{f_k}\)</span> such that;
+<ul>
+<li class="fragment"><span class="math inline">\(\tilde{f_k}(x) \le f(x) \ \forall \ x\)</span></li>
+<li class="fragment"><span class="math inline">\(\tilde{f_k}(x_k) = f(x_k)\)</span></li>
+</ul></li>
+<li class="fragment">(<strong>Maximize</strong>) Maximize <span class="math inline">\(\tilde{f}_k\)</span> and store the argument in <span class="math inline">\(x_{k+1}\)</span></li>
+<li class="fragment">Repeat above steps until <span class="math inline">\(|x_{k+1}-x_k| \le \epsilon\)</span></li>
+</ul></li>
+<li class="fragment">One strategy (that we’ll use shortly) to get the minorizer is the <em>Jensen’s</em> Inequality; For any concave function <span class="math inline">\(f\)</span>, we have;</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+f(\sum_{k=1}^K \lambda_k a_k) \ge \sum_{k=1}^K \lambda_k f(a_k)
+\]</span></p>
+</div>
+</section>
+<section id="towards-a-minorizer" class="slide level2 smaller">
+<h2>Towards a Minorizer</h2>
+<ul>
+<li class="fragment">We’ll now introduce some new variables into the mix;</li>
+<li class="fragment">For every datapoint <span class="math inline">\(\mathbf{x}_i\)</span>, we introduce <span class="math inline">\(\lambda^i_1\)</span> and <span class="math inline">\(\lambda^i_2\)</span> (in general for a <span class="math inline">\(K\)</span> cluster setup, this is <span class="math inline">\(K\)</span> extra variables for each datapoint).</li>
+<li class="fragment">We’ll introduce this to the <span class="math inline">\(\log\)</span> likelihood function (without changing it at all);</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+\log(\text{likelihood}(\theta)) = \sum_{i=1}^{N} \log \Bigg[ \sum_{k=1}^{2} \lambda^i_k \pi_{k} \frac{1}{\lambda^i_k\sqrt{2 \pi \sigma^{2}}} e^{ -\frac{\left(x_{i}-\mu_{k}\right)^{2}}{2 \sigma_{k}^{2}}} \Bigg]
+\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
+\ge \sum_{i=1}^{N} \sum_{k=1}^{2} \lambda^i_k \log \Bigg[ \pi_{k} \frac{1}{\lambda^i_k\sqrt{2 \pi \sigma^{2}}} e^{ -\frac{\left(x_{i}-\mu_{k}\right)^{2}}{2 \sigma_{k}^{2}}} \Bigg]
+\]</span></p>
+<p>(by Jensen’s. <span class="math inline">\(\log\)</span> is concave)</p>
+</div>
+</section>
+<section id="em-algorithm" class="slide level2 smaller">
+<h2>EM Algorithm</h2>
+<ul>
+<li class="fragment">Fix <span class="math inline">\(\lambda\)</span>’s and maximze minorizer w.r.t <span class="math inline">\(\theta\)</span> to get:</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[
+\hat{\pi_k} = \frac{\sum_{i=1}^n \lambda^i_k}{n} \quad ; \quad \hat{\mu_k} = \frac{\sum_{i=1}^n \lambda^i_k x_i}{\sum_{i=1}^n \lambda^i_k} \quad ; \quad \hat{\sigma^2_k} = \frac{\sum_{i=1}^n \lambda^i_k (x_i-\hat{\mu_k})^2}{\sum_{i=1}^n \lambda^i_k}
+\]</span></p>
+<ul>
+<li class="fragment">Gives a meaning to <span class="math inline">\(\lambda^i_k\)</span>; the <em>proportion</em> of point <span class="math inline">\(x_i\)</span> in cluster <span class="math inline">\(k\)</span></li>
+<li class="fragment">With the above understanding, the result of fixing <span class="math inline">\(\theta\)</span> and maximizing w.r.t the <span class="math inline">\(\lambda\)</span>’s should be no surprise:</li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
+\hat{\lambda^i_k} = \frac{\pi_{k} \mathcal{N}\left(x_{i} \mid \mu_{k}, \sigma_{k}\right)}{\sum_{j=1}^{2} \pi_{j} \mathcal{N}\left(x_{i} \mid \mu_{j}, \sigma_{j}\right)}
+\]</span></p>
+<ul>
+<li class="fragment">This gives us the next set of values for <span class="math inline">\(\lambda\)</span> (in the MM framework).</li>
+<li class="fragment">EM (Expectation-Maximization) algorithm:
+<ul>
+<li class="fragment">Initialize <span class="math inline">\(\theta_0\)</span>. For some t;</li>
+<li class="fragment">(<em>Expectation</em> step) Fix <span class="math inline">\(\theta_t\)</span> and maximize minorizer to get <span class="math inline">\(\lambda_t\)</span></li>
+<li class="fragment">(<em>Maximization</em> step) Fix <span class="math inline">\(\lambda_t\)</span> and maximize minorizer to get <span class="math inline">\(\theta_{t+1}\)</span></li>
+<li class="fragment">Repeat until <span class="math inline">\(|\theta_{t+1} - \theta_t| \le \epsilon\)</span></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="section-5" class="slide level2" data-background-iframe="https://iamviveksrk.github.io/ml_handbook/em.html#expectation-step" data-background-interactive="true">
+<h2></h2>
+</section></section>
+<section id="the-end" class="title-slide slide level1 center">
+<h1>The End!</h1>
+<p>Thanks for attending! If you’d like to give feedback, please scan the below code for the form:</p>
+
+<img data-src="files/final.jpg" class="quarto-figure quarto-figure-center r-stretch"><div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
 </div>
 </div>
-</section></section>
+</section>
     </div>
   </div>
 
@@ -1045,6 +1531,7 @@ f(x|\mu, \sigma^2) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
   <script src="index_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
   <script src="index_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
   <script src="index_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="index_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
   <script src="index_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
@@ -1065,7 +1552,8 @@ f(x|\mu, \sigma^2) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
 'autoAnimateEasing': "ease",
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
-'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
 'smaller': false,
  
         // Display controls in the bottom right corner
@@ -1236,7 +1724,7 @@ f(x|\mu, \sigma^2) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
         },
 
         // reveal.js plugins
-        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
 
           RevealMath,
           RevealNotes,
@@ -1432,6 +1920,38 @@ f(x|\mu, \sigma^2) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
       }
     });
     </script>
+    <script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","closeEffect":"zoom","loop":false,"descPosition":"bottom"});
+    (function() {
+      let previousOnload = window.onload;
+      window.onload = () => {
+        if (previousOnload) {
+          previousOnload();
+        }
+        lightboxQuarto.on('slide_before_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          const href = trigger.getAttribute('href');
+          if (href !== null) {
+            const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+            if (imgEl !== null) {
+              const srcAttr = imgEl.getAttribute("src");
+              if (srcAttr && srcAttr.startsWith("data:")) {
+                slideConfig.href = srcAttr;
+              }
+            }
+          } 
+        });
+      
+        lightboxQuarto.on('slide_after_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(slideNode);
+          }
+        });
+      
+      };
+      
+    })();
+              </script>
     
 
 </body></html>
